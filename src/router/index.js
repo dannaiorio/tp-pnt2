@@ -6,11 +6,12 @@ import FavoritosView from '../views/FavoritosView.vue'
 
 const router = createRouter({
 history: createWebHistory(),
+
 routes: [
-    { path: '/', name: 'home', component: HomeView },
-    { path: '/catalogo', name: 'catalogo', component: CatalogoView },
-    { path: '/detalle/:id', name: 'detalle', component: DetalleView },
-    { path: '/favoritos', name: 'favoritos', component: FavoritosView }
+    { path: '/', component: HomeView },
+    { path: '/catalogo', component: CatalogoView },
+    { path: '/detalle/:id', component: DetalleView },
+    { path: '/favoritos', component: FavoritosView }
 ]
 })
 
