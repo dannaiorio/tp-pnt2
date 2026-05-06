@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const contenido = ref([])
 const isLoading = ref(false)
