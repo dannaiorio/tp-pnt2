@@ -13,7 +13,7 @@ async function getDetalle() {
   try {
     isLoading.value = true
     isError.value = false
-    const respuesta = await fetch('https://www.mockachino.com/9fa4091e-c498-4d/catalogo')
+    const respuesta = await fetch('https://www.mockachino.com/99371521-7de7-47/catalogos')
     const datos = await respuesta.json()
     const todo = [...datos.peliculas, ...datos.series]
     item.value = todo.find(el => el.id === parseInt(route.params.id))

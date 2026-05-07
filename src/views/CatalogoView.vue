@@ -14,7 +14,7 @@ async function getCatalogo() {
   try {
     isLoading.value = true
     isError.value = false
-    const respuesta = await fetch('https://www.mockachino.com/9fa4091e-c498-4d/catalogo')
+    const respuesta = await fetch('https://www.mockachino.com/99371521-7de7-47/catalogos')
     const datos = await respuesta.json()
     contenido.value = [...datos.peliculas, ...datos.series]
   } catch (error) {
