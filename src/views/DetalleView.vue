@@ -7,6 +7,10 @@ const item = ref(null)
 const isLoading = ref(false)
 const isError = ref(false)
 
+const irAlCatalogo = () => {
+  router.push('/catalogo')
+}
+
 onMounted(() => getDetalle())
 
 async function getDetalle() {
@@ -40,6 +44,7 @@ async function getDetalle() {
       <button @click="isError = false">Cerrar</button>
       <p>Error al cargar el detalle</p>
     </div>
+
     <div v-if="item" class="contenido">
       <img :src="item.poster" :alt="item.titulo" />
       <div class="info">
@@ -49,6 +54,11 @@ async function getDetalle() {
         <p class="descripcion">{{ item.descripcion }}</p>
       </div>
     </div>
+    <div>  
+          <button @click="irAlCatalogo">
+    Ir al catálogo
+  </button>
+</div>
   </div>
 </template>
 
