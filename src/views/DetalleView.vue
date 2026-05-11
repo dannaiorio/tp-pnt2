@@ -11,12 +11,18 @@ onMounted(() => getDetalle())
 
 async function getDetalle() {
   try {
+
     isLoading.value = true
     isError.value = false
+
     const respuesta = await fetch('https://www.mockachino.com/99371521-7de7-47/catalogos')
     const datos = await respuesta.json()
+
     const todo = [...datos.peliculas, ...datos.series]
-    item.value = todo.find(el => el.id === parseInt(route.params.id))
+    const id = parseInt(route.params.id)
+
+  item.value = todo.find(el => el.id === id)
+
   } catch (error) {
     isError.value = true
   } finally {
