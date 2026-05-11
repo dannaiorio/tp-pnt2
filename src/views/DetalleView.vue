@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const item = ref(null)
 const isLoading = ref(false)
 const isError = ref(false)
@@ -55,7 +57,7 @@ async function getDetalle() {
       </div>
     </div>
     <div>  
-          <button @click="irAlCatalogo">
+          <button @click="irAlCatalogo" class="boton">
     Ir al catálogo
   </button>
 </div>
@@ -74,6 +76,15 @@ async function getDetalle() {
 
 .info h1 {
   margin: 0;
+}
+.boton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .descripcion {
