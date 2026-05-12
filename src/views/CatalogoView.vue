@@ -8,7 +8,7 @@ const isLoading = ref(false)
 const isError = ref(false)
 const busqueda = ref('')
 
-onMounted(() => getCatalogo())
+onMounted(() => getCatalogo()) // onMounted para cargar el catálogo al montar el componente
 
 async function getCatalogo() {
   try {
@@ -40,9 +40,12 @@ const contenidoFiltrado = computed(() =>
       <button @click="isError = false">Cerrar</button>
       <p>Error al cargar el catálogo</p>
     </div>
+
     <h2>{{ contenidoFiltrado.length }} resultados</h2>
+
     <div class="grilla">
-      <div v-for="item in contenidoFiltrado" :key="item.id" class="tarjeta">
+      <div v-for="item in contenidoFiltrado" :key="item.id" class="tarjeta"
+        @click="router.push('/detalle/' + item.id)"> <!-- Navega al detalle del item al hacer click -->
         <img :src="item.poster" :alt="item.titulo" />
         <h2>{{ item.titulo }}</h2>
         <p>{{ item.año }} | {{ item.genero }}</p>

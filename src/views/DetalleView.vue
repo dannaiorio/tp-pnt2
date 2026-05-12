@@ -10,7 +10,7 @@ const isLoading = ref(false)
 const isError = ref(false)
 
 const irAlCatalogo = () => {
-  router.push('/catalogo')
+  router.push('/catalogo')  // Navega al catálogo
 }
 
 onMounted(() => getDetalle())
@@ -28,7 +28,9 @@ async function getDetalle() {
     const id = parseInt(route.params.id)
 
   item.value = todo.find(el => el.id === id)
-
+if (!item.value) {
+  router.push('/catalogo')  // Si no se encuentra el item, redirige al catálogo
+}
   } catch (error) {
     isError.value = true
   } finally {
@@ -47,6 +49,7 @@ async function getDetalle() {
       <p>Error al cargar el detalle</p>
     </div>
 
+    
     <div v-if="item" class="contenido">
       <img :src="item.poster" :alt="item.titulo" />
       <div class="info">

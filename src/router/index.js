@@ -10,7 +10,7 @@ history: createWebHistory(),
 routes: [
     { path: '/', redirect: '/catalogo' }, // Redirige la raíz al catálogo por el momento hasta decidir HomeView
     { path: '/catalogo', component: CatalogoView },
-    { path: '/detalle/:id', component: DetalleView },
+    { path: '/detalle/:id', component: DetalleView }, // :id ruta dinamica 
     { path: '/favoritos', component: FavoritosView }
 ]
 })
