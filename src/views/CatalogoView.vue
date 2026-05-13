@@ -41,7 +41,7 @@ const contenidoFiltrado = computed(() =>
       <p>Error al cargar el catálogo</p>
     </div>
 
-    <h2>{{ contenidoFiltrado.length }} resultados</h2>
+    <h2>{{contenidoFiltrado.length}} resultados</h2>
 
     <div class="grilla">
       <div v-for="item in contenidoFiltrado" :key="item.id" class="tarjeta"
@@ -71,11 +71,15 @@ const contenidoFiltrado = computed(() =>
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .tarjeta img {
   width: 100%;
-  height: auto;
+  height: 300px;
+  object-fit: cover;
 }
 
 .tarjeta h2 {

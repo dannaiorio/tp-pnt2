@@ -77,6 +77,13 @@ if (!item.value) {
   gap: 1rem;
 }
 
+.contenido img {
+  width: 300px;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
 .info h1 {
   margin: 0;
 }
