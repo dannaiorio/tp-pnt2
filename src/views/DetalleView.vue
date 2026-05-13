@@ -79,10 +79,10 @@ async function votarPelicula() {
       throw new Error('No se pudo guardar el voto')
     }
 
-    alert('Voto guardado')
+    
   } catch (error) {
     console.log('ERROR REAL:', error)
-    alert('Error al guardar voto')
+    
   }
 }
 </script>
