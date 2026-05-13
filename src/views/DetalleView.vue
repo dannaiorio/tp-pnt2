@@ -77,11 +77,14 @@ async function votarPelicula() {
 
     if (!respuesta.ok) {
       throw new Error('No se pudo guardar el voto')
+      
     }
+    alert('Voto registrado')
 
     
   } catch (error) {
     console.log('ERROR REAL:', error)
+    alert('Error al registrar voto')
     
   }
 }
@@ -108,6 +111,10 @@ async function votarPelicula() {
       </div>
     </div>
     <div>  
+      <P><button @click="agregarFavorito" class="boton">
+      Agregar a favoritos ❤️  
+    </button></P>
+    
           <button @click="irAlCatalogo" class="boton">
     Ir al catálogo
   </button>
