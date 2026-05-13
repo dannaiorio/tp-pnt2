@@ -2,7 +2,9 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
+import vue3StarRatings from 'vue3-star-ratings'
 
+const puntuacion = ref(0)
 const route = useRoute()
 const router = useRouter()
 const item = ref(null)
@@ -37,6 +39,52 @@ if (!item.value) {
     isLoading.value = false
   }
 }
+
+
+async function agregarFavorito() {
+  try {
+    await fetch('https://6a03ce8d2afe8349b4b583b8.mockapi.io/favoritos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:  JSON.stringify({
+  ...item.value,
+  puntuacion: puntuacion.value
+})
+    })
+    alert('Agregado a favoritos')
+  } catch (error) {
+    alert('Error al agregar favorito')
+  }
+}
+
+async function votarPelicula() {
+  try {
+    console.log('ITEM:', item.value)
+    console.log('PUNTUACION:', puntuacion.value)
+
+    const respuesta = await fetch('https://6a03ce8d2afe8349b4b583b8.mockapi.io/votos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        peliculaId: item.value.id,
+        titulo: item.value.titulo,
+        poster: item.value.poster || item.value.imagen,
+        puntuacion: Number(puntuacion.value)
+      })
+    })
+
+    console.log('RESPUESTA:', respuesta)
+
+    if (!respuesta.ok) {
+      throw new Error('No se pudo guardar el voto')
+    }
+
+    alert('Voto guardado')
+  } catch (error) {
+    console.log('ERROR REAL:', error)
+    alert('Error al guardar voto')
+  }
+}
 </script>
 
 
@@ -63,7 +111,22 @@ if (!item.value) {
           <button @click="irAlCatalogo" class="boton">
     Ir al catálogo
   </button>
+
+  <div class="rating">
+  <p>Tu puntuación:</p>
+
+  <vue3-star-ratings
+  v-model="puntuacion"
+  :numberOfStars="10"
+/>
 </div>
+</div>
+<p>Elegiste: {{ puntuacion }}/10</p>
+
+<button class="boton" @click="votarPelicula">
+  Votar película
+</button>
+
   </div>
 </template>
 
@@ -99,6 +162,14 @@ if (!item.value) {
 
 .descripcion {
   margin-top: 1rem;
+}
+
+.rating {
+  margin-top: 1rem;
+}
+
+.rating p {
+  margin: 0.5rem 0;
 }
 
 </style>

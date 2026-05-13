@@ -8,6 +8,13 @@ const isLoading = ref(false)
 const isError = ref(false)
 const busqueda = ref('')
 
+const irAFavoritos = () => {
+  router.push('/favoritos')  // Navega a la lista de favoritos
+}
+const irARanking = () => {
+  router.push('/ranking')  // Navega al ranking
+}
+
 onMounted(() => getCatalogo()) // onMounted para cargar el catálogo al montar el componente
 
 async function getCatalogo() {
@@ -43,7 +50,19 @@ const contenidoFiltrado = computed(() =>
 
     <h2>{{contenidoFiltrado.length}} resultados</h2>
 
+    <p>
+      <button @click="irAFavoritos" class="boton">
+      Ver favoritos ❤️
+    </button> 
+    </p>
+    <p>
+      <button @click="irARanking" class="boton">
+      Ver ranking 🏆
+    </button> 
+    </p>
+
     <div class="grilla">
+
       <div v-for="item in contenidoFiltrado" :key="item.id" class="tarjeta"
         @click="router.push('/detalle/' + item.id)"> <!-- Navega al detalle del item al hacer click -->
         <img :src="item.poster" :alt="item.titulo" />
@@ -52,6 +71,7 @@ const contenidoFiltrado = computed(() =>
         <p>⭐ {{ item.puntuacion }}</p>
       </div>
     </div>
+    
   </div>
 </template>
 
