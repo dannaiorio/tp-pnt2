@@ -68,7 +68,7 @@ async function votarPelicula() {
       body: JSON.stringify({
         peliculaId: item.value.id,
         titulo: item.value.titulo,
-        poster: item.value.poster || item.value.imagen,
+        poster: item.value.poster,
         puntuacion: Number(puntuacion.value)
       })
     })
