@@ -1,41 +1,43 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
-const contenido = ref([])
-const isLoading = ref(false)
-const isError = ref(false)
-const busqueda = ref('')
+const contenido = ref([]);
+const isLoading = ref(false);
+const isError = ref(false);
+const busqueda = ref("");
 
 const irAFavoritos = () => {
-  router.push('/favoritos')  // Navega a la lista de favoritos
-}
+  router.push("/favoritos"); // Navega a la lista de favoritos
+};
 const irARanking = () => {
-  router.push('/ranking')  // Navega al ranking
-}
+  router.push("/ranking"); // Navega al ranking
+};
 
-onMounted(() => getCatalogo()) // onMounted para cargar el catálogo al montar el componente
+onMounted(() => getCatalogo()); // onMounted para cargar el catálogo al montar el componente
 
 async function getCatalogo() {
   try {
-    isLoading.value = true
-    isError.value = false
-    const respuesta = await fetch('https://www.mockachino.com/99371521-7de7-47/catalogos')
-    const datos = await respuesta.json()
-    contenido.value = [...datos.peliculas, ...datos.series]
+    isLoading.value = true;
+    isError.value = false;
+    const respuesta = await fetch(
+      "https://www.mockachino.com/99371521-7de7-47/catalogos",
+    );
+    const datos = await respuesta.json();
+    contenido.value = [...datos.peliculas, ...datos.series];
   } catch (error) {
-    isError.value = true
+    isError.value = true;
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
 const contenidoFiltrado = computed(() =>
-  contenido.value.filter(item =>
-    item.titulo.toLowerCase().includes(busqueda.value.toLowerCase())
-  )
-)
+  contenido.value.filter((item) =>
+    item.titulo.toLowerCase().includes(busqueda.value.toLowerCase()),
+  ),
+);
 </script>
 
 <template>
@@ -48,30 +50,29 @@ const contenidoFiltrado = computed(() =>
       <p>Error al cargar el catálogo</p>
     </div>
 
-    <h2>{{contenidoFiltrado.length}} resultados</h2>
+    <h2>{{ contenidoFiltrado.length }} resultados</h2>
 
     <p>
-      <button @click="irAFavoritos" class="boton">
-      Ver favoritos ❤️
-    </button> 
+      <button @click="irAFavoritos" class="boton">Ver favoritos ❤️</button>
     </p>
     <p>
-      <button @click="irARanking" class="boton">
-      Ver ranking 🏆
-    </button> 
+      <button @click="irARanking" class="boton">Ver ranking 🏆</button>
     </p>
 
     <div class="grilla">
-
-      <div v-for="item in contenidoFiltrado" :key="item.id" class="tarjeta"
-        @click="router.push('/detalle/' + item.id)"> <!-- Navega al detalle del item al hacer click -->
+      <div
+        v-for="item in contenidoFiltrado"
+        :key="item.id"
+        class="tarjeta"
+        @click="router.push('/detalle/' + item.id)"
+      >
+        <!-- Navega al detalle del item al hacer click -->
         <img :src="item.poster" :alt="item.titulo" />
         <h2>{{ item.titulo }}</h2>
         <p>{{ item.año }} | {{ item.genero }}</p>
         <p>⭐ {{ item.puntuacion }}</p>
       </div>
     </div>
-    
   </div>
 </template>
 

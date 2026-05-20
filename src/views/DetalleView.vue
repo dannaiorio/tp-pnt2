@@ -1,96 +1,68 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useRouter } from 'vue-router'
-import vue3StarRatings from 'vue3-star-ratings'
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
+import vue3StarRatings from "vue3-star-ratings";
+import { useFavoritosStore } from "@/stores/useFavoritosStore";
+import { useVotosStore } from "../stores/useVotosStore";
 
-const puntuacion = ref(0)
-const route = useRoute()
-const router = useRouter()
-const item = ref(null)
-const isLoading = ref(false)
-const isError = ref(false)
+const favoritosStore = useFavoritosStore();
+const store = useVotosStore();
+const puntuacion = ref(0);
+const route = useRoute();
+const router = useRouter();
+const item = ref(null);
+const isLoading = ref(false);
+const isError = ref(false);
 
 const irAlCatalogo = () => {
-  router.push('/catalogo')  // Navega al catálogo
-}
+  router.push("/catalogo"); // Navega al catálogo
+};
 
-onMounted(() => getDetalle())
+onMounted(() => getDetalle());
 
 async function getDetalle() {
   try {
+    isLoading.value = true;
+    isError.value = false;
 
-    isLoading.value = true
-    isError.value = false
+    const respuesta = await fetch(
+      "https://www.mockachino.com/99371521-7de7-47/catalogos",
+    );
+    const datos = await respuesta.json();
 
-    const respuesta = await fetch('https://www.mockachino.com/99371521-7de7-47/catalogos')
-    const datos = await respuesta.json()
+    const todo = [...datos.peliculas, ...datos.series];
+    const id = parseInt(route.params.id);
 
-    const todo = [...datos.peliculas, ...datos.series]
-    const id = parseInt(route.params.id)
-
-  item.value = todo.find(el => el.id === id)
-if (!item.value) {
-  router.push('/catalogo')  // Si no se encuentra el item, redirige al catálogo
-}
+    item.value = todo.find((el) => el.id === id);
+    if (!item.value) {
+      router.push("/catalogo"); // Si no se encuentra el item, redirige al catálogo
+    }
   } catch (error) {
-    isError.value = true
+    isError.value = true;
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
-
 
 async function agregarFavorito() {
-  try {
-    await fetch('https://6a03ce8d2afe8349b4b583b8.mockapi.io/favoritos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:  JSON.stringify({
-  ...item.value,
-  puntuacion: puntuacion.value
-})
-    })
-    alert('Agregado a favoritos')
-  } catch (error) {
-    alert('Error al agregar favorito')
-  }
+  await favoritosStore.agregarFavorito(item.value)
 }
 
 async function votarPelicula() {
   try {
-    console.log('ITEM:', item.value)
-    console.log('PUNTUACION:', puntuacion.value)
-
-    const respuesta = await fetch('https://6a03ce8d2afe8349b4b583b8.mockapi.io/votos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        peliculaId: item.value.id,
-        titulo: item.value.titulo,
-        poster: item.value.poster,
-        puntuacion: Number(puntuacion.value)
-      })
+    await store.agregarVoto({
+      peliculaId: item.value.id,
+      titulo: item.value.titulo,
+      poster: item.value.poster,
+      puntuacion: Number(puntuacion.value)
     })
-
-    console.log('RESPUESTA:', respuesta)
-
-    if (!respuesta.ok) {
-      throw new Error('No se pudo guardar el voto')
-      
-    }
-    alert('Voto registrado')
-
-    
+    alert("Voto registrado");
   } catch (error) {
-    console.log('ERROR REAL:', error)
-    alert('Error al registrar voto')
-    
+    alert("Error al registrar voto");
   }
 }
 </script>
-
-
 
 <template>
   <div class="detalle">
@@ -100,7 +72,6 @@ async function votarPelicula() {
       <p>Error al cargar el detalle</p>
     </div>
 
-    
     <div v-if="item" class="contenido">
       <img :src="item.poster" :alt="item.titulo" />
       <div class="info">
@@ -110,30 +81,24 @@ async function votarPelicula() {
         <p class="descripcion">{{ item.descripcion }}</p>
       </div>
     </div>
-    <div>  
-      <P><button @click="agregarFavorito" class="boton">
-      Agregar a favoritos ❤️  
-    </button></P>
-    
-          <button @click="irAlCatalogo" class="boton">
-    Ir al catálogo
-  </button>
+    <div>
+      <p
+        ><button @click="agregarFavorito" class="boton">
+          Agregar a favoritos ❤️
+        </button></p
+      >
 
-  <div class="rating">
-  <p>Tu puntuación:</p>
+      <button @click="irAlCatalogo" class="boton">Ir al catálogo</button>
 
-  <vue3-star-ratings
-  v-model="puntuacion"
-  :numberOfStars="10"
-/>
-</div>
-</div>
-<p>Elegiste: {{ puntuacion }}/10</p>
+      <div class="rating">
+        <p>Tu puntuación:</p>
 
-<button class="boton" @click="votarPelicula">
-  Votar película
-</button>
+        <vue3-star-ratings v-model="puntuacion" :numberOfStars="10" />
+      </div>
+    </div>
+    <p>Elegiste: {{ puntuacion }}/10</p>
 
+    <button class="boton" @click="votarPelicula">Votar película</button>
   </div>
 </template>
 
@@ -178,5 +143,4 @@ async function votarPelicula() {
 .rating p {
   margin: 0.5rem 0;
 }
-
 </style>

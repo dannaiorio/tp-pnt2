@@ -1,90 +1,51 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useVotosStore } from "../stores/useVotosStore";
+const store = useVotosStore();
+
+const router = useRouter();
 
 
-const votos = ref([])
-const isLoading = ref(false)
-const isError = ref(false)
-const router = useRouter()
-
-
-const URL_VOTOS = 'https://6a03ce8d2afe8349b4b583b8.mockapi.io/votos'
 
 const irAlCatalogo = () => {
-  router.push('/catalogo')  // Navega al catálogo
-}
-onMounted(() => getVotos())
+  router.push("/catalogo"); // Navega al catálogo
+};
 
-async function getVotos() { 
-try {
-isLoading.value = true
-isError.value = false
 
-const respuesta = await fetch(URL_VOTOS)
-const datos = await respuesta.json()
+onMounted(() => store.fetchVotos());
 
-votos.value = datos
-} catch (error) {
-isError.value = true
-} finally {
-isLoading.value = false
-}
-}
 
-const ranking = computed(() => {
-const acumulador = {}
-
-votos.value.forEach((voto) => {
-if (!acumulador[voto.peliculaId]) {
-acumulador[voto.peliculaId] = {
-peliculaId: voto.peliculaId,
-titulo: voto.titulo,
-poster: voto.poster,
-suma: 0,
-cantidad: 0
-}
-}
-
-acumulador[voto.peliculaId].suma += Number(voto.puntuacion)
-acumulador[voto.peliculaId].cantidad++
-})
-
-return Object.values(acumulador)
-.map((peli) => ({
-...peli,
-promedio: peli.suma / peli.cantidad
-}))
-.sort((a, b) => b.promedio - a.promedio)
-})
 </script>
 
 <template>
 <div class="ranking">
     <h1>Ranking de películas</h1>
 
-    <p v-if="isLoading">Cargando ranking...</p>
+    <p v-if="store.isLoading">Cargando ranking...</p>
 
-    <div v-if="isError">
+    <div v-if="store.isError">
 <p>Error al cargar el ranking</p>
-<button @click="getVotos">Reintentar</button>
+    <button @click="store.fetchVotos">Reintentar</button>
     </div>
 
-    <p v-if="!isLoading && !isError && ranking.length === 0">
+    <p v-if="!store.isLoading && !store.isError && store.ranking.length === 0">
 Todavía no hay votos cargados.
     </p>
 
-    <div v-if="!isLoading && !isError && ranking.length > 0" class="grilla">
-<div v-for="peli in ranking" :key="peli.peliculaId" class="tarjeta">
+<div v-if="!store.isLoading && !store.isError && store.ranking.length > 0" class="grilla">
+
+<div v-for="peli in store.ranking" :key="peli.peliculaId" class="tarjeta">
+
         <img :src="peli.poster" :alt="peli.titulo" />
+
         <h2>{{ peli.titulo }}</h2>
         <p>⭐ Promedio: {{ peli.promedio.toFixed(1) }}/10</p>
         <p>Votos: {{ peli.cantidad }}</p>
-</div>
+
     </div>
-    <p><button @click="irAlCatalogo" class="boton">
-        Ir al catálogo
-    </button></p>
+    </div>
+    <p><button @click="irAlCatalogo" class="boton">Ir al catálogo</button></p>
 </div>
 </template>
 
