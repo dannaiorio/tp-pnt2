@@ -3,38 +3,39 @@ import { ref } from 'vue'
 
 export const useBusquedaStore = defineStore('busqueda', () => {
 
-  const busqueda = ref('')
-  const generoSeleccionado = ref('')
-  const añoSeleccionado = ref('')
+const busqueda = ref('')
+const generoSeleccionado = ref('')
+const añoSeleccionado = ref('')
 
-  function filtrar(lista) {
+function filtrar(lista) {
+    if (!lista || lista.length === 0) return [] 
     let resultado = [...lista]
 
     if (busqueda.value) {
-      const texto = busqueda.value.toLowerCase()
-      resultado = resultado.filter(i =>
-        i.titulo.toLowerCase().includes(texto) ||
-        i.año.toString().includes(texto) ||
-        i.genero.toLowerCase().includes(texto)
-      )
+const texto = busqueda.value.toLowerCase()
+    resultado = resultado.filter(i =>
+        i.titulo?.toLowerCase().includes(texto) ||
+        i.año?.toString().includes(texto) ||
+        i.genero?.toLowerCase().includes(texto)
+    )
     }
 
     if (añoSeleccionado.value) {
-      resultado = resultado.filter(i => i.año === añoSeleccionado.value)
+    resultado = resultado.filter(i => i.año === añoSeleccionado.value)
     }
 
     if (generoSeleccionado.value) {
-      resultado = resultado.filter(i => i.genero === generoSeleccionado.value)
+    resultado = resultado.filter(i => i.genero === generoSeleccionado.value)
     }
 
     return resultado
-  }
+}
 
-  function limpiar() {
+function limpiar() {
     busqueda.value = ''
     generoSeleccionado.value = ''
     añoSeleccionado.value = ''
-  }
+}
 
-  return { busqueda, generoSeleccionado, añoSeleccionado, filtrar, limpiar }
+return { busqueda, generoSeleccionado, añoSeleccionado, filtrar, limpiar }
 })

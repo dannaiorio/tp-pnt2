@@ -1,9 +1,12 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useVotosStore } from "../stores/useVotosStore";
-const store = useVotosStore();
+import { useBusquedaStore } from "../stores/useBusquedaStore";
 
+
+const store = useVotosStore();
+const busquedaStore = useBusquedaStore();
 const router = useRouter();
 
 
@@ -16,35 +19,39 @@ const irAlCatalogo = () => {
 onMounted(() => store.fetchVotos());
 
 
+const rankingFiltrado = computed(() => busquedaStore.filtrar(store.ranking))
+
+
 </script>
 
 <template>
 <div class="ranking">
     <h1>Ranking de películas</h1>
 
+    <!-- Búsqueda -->
+    <input type="text" v-model="busquedaStore.busqueda" placeholder="Buscar por título..." />
+    <button @click="busquedaStore.limpiar" class="boton">Limpiar</button>
+
     <p v-if="store.isLoading">Cargando ranking...</p>
 
     <div v-if="store.isError">
-<p>Error al cargar el ranking</p>
-    <button @click="store.fetchVotos">Reintentar</button>
+            <p>Error al cargar el ranking</p>
+<button @click="store.fetchVotos">Reintentar</button>
     </div>
 
-    <p v-if="!store.isLoading && !store.isError && store.ranking.length === 0">
-Todavía no hay votos cargados.
+    <p v-if="!store.isLoading && !store.isError && rankingFiltrado.length === 0">
+    Todavía no hay votos cargados.
     </p>
 
-<div v-if="!store.isLoading && !store.isError && store.ranking.length > 0" class="grilla">
-
-<div v-for="peli in store.ranking" :key="peli.peliculaId" class="tarjeta">
-
+    <div v-if="!store.isLoading && !store.isError && rankingFiltrado.length > 0" class="grilla">
+    <div v-for="peli in rankingFiltrado" :key="peli.peliculaId" class="tarjeta">
         <img :src="peli.poster" :alt="peli.titulo" />
-
         <h2>{{ peli.titulo }}</h2>
         <p>⭐ Promedio: {{ peli.promedio.toFixed(1) }}/10</p>
         <p>Votos: {{ peli.cantidad }}</p>
+    </div>
+    </div>
 
-    </div>
-    </div>
     <p><button @click="irAlCatalogo" class="boton">Ir al catálogo</button></p>
 </div>
 </template>

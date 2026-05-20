@@ -1,12 +1,15 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useBusquedaStore } from "@/stores/useBusquedaStore";
+
+const busquedaStore = useBusquedaStore();
 const router = useRouter();
 
 const contenido = ref([]);
 const isLoading = ref(false);
 const isError = ref(false);
-const busqueda = ref("");
+
 
 const irAFavoritos = () => {
   router.push("/favoritos"); // Navega a la lista de favoritos
@@ -33,17 +36,33 @@ async function getCatalogo() {
   }
 }
 
-const contenidoFiltrado = computed(() =>
-  contenido.value.filter((item) =>
-    item.titulo.toLowerCase().includes(busqueda.value.toLowerCase()),
-  ),
-);
+// Géneros y años se generan solos desde los datos
+const generos = computed(() => [...new Set(contenido.value.map(i => i.genero))])
+const años = computed(() => [...new Set(contenido.value.map(i => i.año))].sort((a, b) => b - a))
+
+// Usa el store para filtrar
+const contenidoFiltrado = computed(() => busquedaStore.filtrar(contenido.value))
 </script>
 
 <template>
   <div class="catalogo">
     <h1>Catálogo</h1>
-    <input type="text" v-model="busqueda" placeholder="Buscar..." />
+
+    <!-- Barra de búsqueda avanzada -->
+    <input type="text" v-model="busquedaStore.busqueda" placeholder="Buscar por título..." />
+
+    <select v-model="busquedaStore.generoSeleccionado">
+      <option value="">Todos los géneros</option>
+      <option v-for="g in generos" :key="g" :value="g">{{ g }}</option>
+    </select>
+
+    <select v-model="busquedaStore.añoSeleccionado">
+      <option value="">Todos los años</option>
+      <option v-for="a in años" :key="a" :value="a">{{ a }}</option>
+    </select>
+
+    <button @click="busquedaStore.limpiar" class="boton">Limpiar filtros</button>
+
     <p v-if="isLoading">Cargando...</p>
     <div v-if="isError">
       <button @click="isError = false">Cerrar</button>
@@ -66,7 +85,6 @@ const contenidoFiltrado = computed(() =>
         class="tarjeta"
         @click="router.push('/detalle/' + item.id)"
       >
-        <!-- Navega al detalle del item al hacer click -->
         <img :src="item.poster" :alt="item.titulo" />
         <h2>{{ item.titulo }}</h2>
         <p>{{ item.año }} | {{ item.genero }}</p>
