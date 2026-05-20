@@ -36,7 +36,7 @@ async function getCatalogo() {
   }
 }
 
-// Géneros y años se generan solos desde los datos
+// PASAR A STORE
 const generos = computed(() => [...new Set(contenido.value.map(i => i.genero))])
 const años = computed(() => [...new Set(contenido.value.map(i => i.año))].sort((a, b) => b - a))
 

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+//VER composables , CATALOGO DE PELIS EN STORE
+
 export const useBusquedaStore = defineStore('busqueda', () => {
 
 const busqueda = ref('')
