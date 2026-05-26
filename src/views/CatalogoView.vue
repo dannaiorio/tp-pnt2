@@ -1,34 +1,35 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useBusquedaStore } from "@/stores/useBusquedaStore";
+import { useCatalogoStore } from "@/stores/useCatalogoStore";
+import { filtrar } from "@/utils/filtrar";
 
-const busquedaStore = useBusquedaStore();
+const catalogoStore = useCatalogoStore();
 const router = useRouter();
 
-const contenido = ref([]);
+
 const isLoading = ref(false);
 const isError = ref(false);
 
 
+const busqueda = ref('');
+const generoSeleccionado = ref('');
+const añoSeleccionado = ref('');
+
 const irAFavoritos = () => {
-  router.push("/favoritos"); // Navega a la lista de favoritos
+  router.push("/favoritos"); 
 };
 const irARanking = () => {
-  router.push("/ranking"); // Navega al ranking
+  router.push("/ranking"); 
 };
 
-onMounted(() => getCatalogo()); // onMounted para cargar el catálogo al montar el componente
+onMounted(() => cargar()); 
 
-async function getCatalogo() {
+async function cargar() {
   try {
     isLoading.value = true;
     isError.value = false;
-    const respuesta = await fetch(
-      "https://www.mockachino.com/99371521-7de7-47/catalogos",
-    );
-    const datos = await respuesta.json();
-    contenido.value = [...datos.peliculas, ...datos.series];
+    await catalogoStore.fetchCatalogo();
   } catch (error) {
     isError.value = true;
   } finally {
@@ -36,12 +37,15 @@ async function getCatalogo() {
   }
 }
 
-// PASAR A STORE
-const generos = computed(() => [...new Set(contenido.value.map(i => i.genero))])
-const años = computed(() => [...new Set(contenido.value.map(i => i.año))].sort((a, b) => b - a))
+function limpiar() {
+  busqueda.value = '';
+  generoSeleccionado.value = '';
+  añoSeleccionado.value = '';
+}
 
-// Usa el store para filtrar
-const contenidoFiltrado = computed(() => busquedaStore.filtrar(contenido.value))
+const contenidoFiltrado = computed(() =>
+  filtrar(catalogoStore.contenido, { busqueda: busqueda.value, generoSeleccionado: generoSeleccionado.value, añoSeleccionado: añoSeleccionado.value })
+)
 </script>
 
 <template>
@@ -49,19 +53,19 @@ const contenidoFiltrado = computed(() => busquedaStore.filtrar(contenido.value))
     <h1>Catálogo</h1>
 
     <!-- Barra de búsqueda avanzada -->
-    <input type="text" v-model="busquedaStore.busqueda" placeholder="Buscar por título..." />
+    <input type="text" v-model="busqueda" placeholder="Buscar por título..." />
 
-    <select v-model="busquedaStore.generoSeleccionado">
+    <select v-model="generoSeleccionado">
       <option value="">Todos los géneros</option>
-      <option v-for="g in generos" :key="g" :value="g">{{ g }}</option>
+      <option v-for="g in catalogoStore.generos" :key="g" :value="g">{{ g }}</option>
     </select>
 
-    <select v-model="busquedaStore.añoSeleccionado">
+    <select v-model="añoSeleccionado">
       <option value="">Todos los años</option>
-      <option v-for="a in años" :key="a" :value="a">{{ a }}</option>
+      <option v-for="a in catalogoStore.años" :key="a" :value="a">{{ a }}</option>
     </select>
 
-    <button @click="busquedaStore.limpiar" class="boton">Limpiar filtros</button>
+    <button @click="limpiar" class="boton">Limpiar filtros</button>
 
     <p v-if="isLoading">Cargando...</p>
     <div v-if="isError">

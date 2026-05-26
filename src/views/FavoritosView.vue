@@ -3,15 +3,39 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useFavoritosStore } from "@/stores/useFavoritosStore";
 
-const store = useFavoritosStore();
+const favoritosStore = useFavoritosStore();
 const router = useRouter();
+
+const URL_FAVORITOS = "https://6a03ce8d2afe8349b4b583b8.mockapi.io/favoritos";
+const isLoading = ref(false);
+const isError = ref(false);
 
 const irAlCatalogo = () => {
   router.push("/catalogo"); // Navega al catálogo
 };
 
+onMounted(() => cargar());
 
-onMounted(() => store.fetchFavoritos());
+async function cargar() {
+  try {
+    isLoading.value = true;
+    isError.value = false;
+    await favoritosStore.fetchFavoritos();
+  } catch (error) {
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+
+
+async function eliminarFavorito(id) {
+    await fetch(`${URL_FAVORITOS}/${id}`, {
+    method: 'DELETE'
+    })
+    await favoritosStore.fetchFavoritos()
+}
 
 </script>
 
@@ -19,20 +43,20 @@ onMounted(() => store.fetchFavoritos());
   <div class="favoritos">
     <h1>Favoritos</h1>
 
-    <p v-if="store.isLoading">Cargando...</p>
+    <p v-if="isLoading">Cargando...</p>
 
-    <div v-if="store.isError">
-      <button @click="store.isError = false">Cerrar</button>
+    <div v-if="isError">
+      <button @click="isError = false">Cerrar</button>
       <p>Error al cargar favoritos</p>
     </div>
 
-    <p v-if="!store.isLoading && !store.isError && store.favoritos.length === 0">
+    <p v-if="!isLoading && !isError && favoritosStore.favoritos.length === 0">
       No tenés favoritos agregados
     </p>
 
-    <div v-if="!store.isLoading && !store.isError && store.favoritos.length > 0" class="grilla">
+    <div v-if="!isLoading && !isError && favoritosStore.favoritos.length > 0" class="grilla">
       <div
-        v-for="item in store.favoritos"
+        v-for="item in favoritosStore.favoritos"
         :key="item.id"
         class="tarjeta"
       >
@@ -40,7 +64,7 @@ onMounted(() => store.fetchFavoritos());
         <h2>{{ item.titulo }}</h2>
         <p>{{ item.año }} | {{ item.genero }}</p>
         <p>⭐ {{ item.puntuacion }}</p>
-        <button class="boton-eliminar" @click="store.eliminarFavorito(item.id)">
+        <button class="boton-eliminar" @click="eliminarFavorito(item.id)">
           🗑 Eliminar
         </button>
       </div>

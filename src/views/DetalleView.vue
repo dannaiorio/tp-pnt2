@@ -7,6 +7,8 @@ import { useFavoritosStore } from "@/stores/useFavoritosStore";
 import { useVotosStore } from "../stores/useVotosStore";
 
 const favoritosStore = useFavoritosStore();
+const URL_FAVORITOS = "https://6a03ce8d2afe8349b4b583b8.mockapi.io/favoritos";
+const URL_VOTOS = "https://6a03ce8d2afe8349b4b583b8.mockapi.io/votos";
 const store = useVotosStore();
 const puntuacion = ref(0);
 const route = useRoute();
@@ -45,23 +47,40 @@ async function getDetalle() {
   }
 }
 
-async function agregarFavorito() {
-  await favoritosStore.agregarFavorito(item.value)
+async function agregarFavorito(item) {
+  const yaExiste = favoritosStore.favoritos.some(f => f.peliculaId === item.id)
+  if (yaExiste) {
+    alert('Ya está en favoritos')
+    return
+  }
+  await fetch(URL_FAVORITOS, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...item, peliculaId: item.id })
+  })
+  await favoritosStore.fetchFavoritos()
 }
 
 async function votarPelicula() {
   try {
-    await store.agregarVoto({
-      peliculaId: item.value.id,
-      titulo: item.value.titulo,
-      poster: item.value.poster,
-      puntuacion: Number(puntuacion.value)
+    await fetch(URL_VOTOS, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        peliculaId: item.value.id,
+        titulo: item.value.titulo,
+        poster: item.value.poster,
+        puntuacion: Number(puntuacion.value)
+      })
     })
-    alert("Voto registrado");
+    await store.fetchVotos()
+    alert("Voto registrado")
   } catch (error) {
-    alert("Error al registrar voto");
+    alert("Error al registrar voto")
   }
 }
+
+
 </script>
 
 <template>
@@ -83,7 +102,7 @@ async function votarPelicula() {
     </div>
     <div>
       <p
-        ><button @click="agregarFavorito" class="boton">
+        ><button @click="agregarFavorito(item)" class="boton">
           Agregar a favoritos ❤️
         </button></p
       >
