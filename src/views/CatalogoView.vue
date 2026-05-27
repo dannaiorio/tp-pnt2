@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useCatalogoStore } from "@/stores/useCatalogoStore";
 import { useFiltrar } from "@/composables/useFiltrar";
+import TarjetaContenido from '@/components/TarjetaContenido.vue'
 
 const catalogoStore = useCatalogoStore();
 const router = useRouter();
@@ -82,21 +83,16 @@ const contenidoFiltrado = computed(() =>
       <button @click="irARanking" class="boton">Ver ranking 🏆</button>
     </p>
 
-    <div class="grilla">
-      <div
+<div class="grilla">
+      <TarjetaContenido
         v-for="item in contenidoFiltrado"
         :key="item.id"
-        class="tarjeta"
-        @click="router.push('/detalle/' + item.id)"
-      >
-        <img :src="item.poster" :alt="item.titulo" />
-        <h2>{{ item.titulo }}</h2>
-        <p>{{ item.año }} | {{ item.genero }}</p>
-        <p>⭐ {{ item.puntuacion }}</p>
-      </div>
+        :item="item"
+      />
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .catalogo {
@@ -107,36 +103,10 @@ const contenidoFiltrado = computed(() =>
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
+    align-items: start;
 }
 
-.tarjeta {
-  background: #1a1a1a;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
 
-  display: flex;
-  flex-direction: column;
-}
-
-.tarjeta img {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-}
-
-.tarjeta h2 {
-  font-size: 14px;
-  padding: 0.5rem;
-  margin: 0;
-}
-
-.tarjeta p {
-  font-size: 12px;
-  color: #aaa;
-  margin: 0;
-  padding: 0 0.5rem 0.5rem;
-}
 
 .botonHome {
   background: rgb(236, 61, 96);

@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useVotosStore } from "../stores/useVotosStore";
 import { useFiltrar } from "@/composables/useFiltrar";
+import TarjetaContenido from '@/components/TarjetaContenido.vue';
 
 const store = useVotosStore();
 const router = useRouter();
@@ -56,14 +57,13 @@ filtrar(store.ranking, { busqueda: busqueda.value, generoSeleccionado: '', añoS
     Todavía no hay votos cargados.
     </p>
 
-    <div v-if="!isLoading && !isError && rankingFiltrado.length > 0" class="grilla">
-    <div v-for="peli in rankingFiltrado" :key="peli.peliculaId" class="tarjeta">
-        <img :src="peli.poster" :alt="peli.titulo" />
-        <h2>{{ peli.titulo }}</h2>
-        <p>⭐ Promedio: {{ peli.promedio.toFixed(1) }}/10</p>
-        <p>Votos: {{ peli.cantidad }}</p>
-    </div>
-    </div>
+<div v-if="!isLoading && !isError && rankingFiltrado.length > 0" class="grilla">
+<TarjetaContenido
+    v-for="item in rankingFiltrado"
+    :key="item.peliculaId"
+    :item="item"
+/>
+</div>
 
     <p><button @click="irAlCatalogo" class="boton">Ir al catálogo</button></p>
 </div>
@@ -80,28 +80,5 @@ grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 gap: 1rem;
 }
 
-.tarjeta {
-background: #1a1a1a;
-border-radius: 10px;
-overflow: hidden;
-}
 
-.tarjeta img {
-width: 100%;
-height: 300px;
-object-fit: cover;
-}
-
-.tarjeta h2 {
-font-size: 14px;
-padding: 0.5rem;
-margin: 0;
-}
-
-.tarjeta p {
-font-size: 12px;
-color: #aaa;
-margin: 0;
-padding: 0 0.5rem 0.5rem;
-}
 </style>

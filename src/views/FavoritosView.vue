@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useFavoritosStore } from "@/stores/useFavoritosStore";
+import TarjetaContenido from '@/components/TarjetaContenido.vue';
 
 const favoritosStore = useFavoritosStore();
 const router = useRouter();
@@ -53,19 +54,13 @@ async function eliminarFavorito(id) {
     </p>
 
     <div v-if="!isLoading && !isError && favoritosStore.favoritos.length > 0" class="grilla">
-      <div
-        v-for="item in favoritosStore.favoritos"
-        :key="item.id"
-        class="tarjeta"
-      >
-        <img :src="item.poster" :alt="item.titulo" @click="router.push(`/detalle/${item.peliculaId || item.id}`)" />
-        <h2>{{ item.titulo }}</h2>
-        <p>{{ item.año }} | {{ item.genero }}</p>
-        <p>⭐ {{ item.puntuacion }}</p>
-        <button class="boton-eliminar" @click="eliminarFavorito(item.id)">
-          🗑 Eliminar
-        </button>
-      </div>
+    <TarjetaContenido
+    v-for="item in favoritosStore.favoritos"
+    :key="item.id"
+    :item="item"
+    :mostrarEliminar="true"
+    @eliminar="eliminarFavorito"
+  />
     </div>
 
     <button @click="irAlCatalogo" class="boton">Ir al catálogo</button>
@@ -83,30 +78,6 @@ async function eliminarFavorito(id) {
   gap: 1rem;
 }
 
-.tarjeta {
-  background: #1a1a1a;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.tarjeta img {
-  width: 100%;
-  height: auto;
-}
-
-.tarjeta h2 {
-  font-size: 14px;
-  padding: 0.5rem;
-  margin: 0;
-}
-
-.tarjeta p {
-  font-size: 12px;
-  color: #aaa;
-  margin: 0;
-  padding: 0 0.5rem 0.5rem;
-}
 
 .boton-eliminar {
   width: 100%;

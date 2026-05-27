@@ -9,4 +9,9 @@
   <router-link to="/ranking">Ranking</router-link>
 </template>
 
-<style scoped></style>
+<style>
+body {
+  background-color: #252424;
+  color: rgb(244, 188, 255);
+}
+</style>

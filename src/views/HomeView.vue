@@ -2,14 +2,15 @@
 
 import { ref, computed, onMounted } from 'vue';
 import { useCatalogoStore } from '@/stores/useCatalogoStore';
+import TarjetaContenido from '@/components/TarjetaContenido.vue';
 
 const catalogoStore = useCatalogoStore()
 const isLoading = ref(false)
 const isError = ref(false)
 
-onMounted(()=> getCatalogo())
+onMounted(()=> cargar())
 
-async function getCatalogo(){
+async function cargar(){
   try {
     isLoading.value = true
     isError.value = false
@@ -24,6 +25,7 @@ async function getCatalogo(){
 const top5Peliculas = computed(()=>
   
   [...catalogoStore.peliculas]
+
   .sort((a,b)=> b.puntuacion - a.puntuacion)
   .slice(0,5)
     
@@ -32,6 +34,7 @@ const top5Peliculas = computed(()=>
 const top5Series = computed(()=>
   
   [...catalogoStore.series]
+
   .sort((a,b)=> b.puntuacion - a.puntuacion)
   .slice(0,5)
     
@@ -49,29 +52,29 @@ const top5Series = computed(()=>
       <p>Error al cargar</p>
     </div>
 
-    <h3>Top 5 Películas</h3>
+  <h3>Top 5 Películas</h3>
     <div class="grilla">
-      <div class="tarjeta" v-for="t in top5Peliculas" :key="t.id">
-        <img :src="t.poster" :alt="t.titulo" />
-        <h2>{{ t.titulo }}</h2>
-        <p>⭐ {{ t.puntuacion }}</p>
-      </div>
+      <TarjetaContenido
+        v-for="t in top5Peliculas"
+        :key="t.id"
+        :item="t"
+      />
     </div>
 
     <h3>Top 5 Series</h3>
     <div class="grilla">
-      <div class="tarjeta" v-for="t in top5Series" :key="t.id">
-        <img :src="t.poster" :alt="t.titulo" />
-        <h2>{{ t.titulo }}</h2>
-        <p>⭐ {{ t.puntuacion }}</p>
-      </div>
+      <TarjetaContenido
+        v-for="t in top5Series"
+        :key="t.id"
+        :item="t"
+      />
     </div>
 
     <div class="botones">
       <router-link to="/catalogo" class="boton">Ir al catálogo</router-link>
       <router-link to="/favoritos" class="boton">Mis favoritos</router-link>
     </div>
-  </div>
+  </div> 
 </template>
 
 <style scoped>
@@ -85,30 +88,6 @@ const top5Series = computed(()=>
   gap: 1rem;
 }
 
-.tarjeta {
-  background: #1a1a1a;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.tarjeta img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-}
-
-.tarjeta h2 {
-  font-size: 14px;
-  padding: 0.5rem;
-  margin: 0;
-}
-
-.tarjeta p {
-  font-size: 12px;
-  color: #aaa;
-  margin: 0;
-  padding: 0 0.5rem 0.5rem;
-}
 
 .botones {
   display: flex;
