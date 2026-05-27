@@ -21,9 +21,17 @@ async function getCatalogo(){
   }
 }
 
-const top5 = computed(()=>
+const top5Peliculas = computed(()=>
   
-  [...catalogoStore.contenido]
+  [...catalogoStore.peliculas]
+  .sort((a,b)=> b.puntuacion - a.puntuacion)
+  .slice(0,5)
+    
+)
+
+const top5Series = computed(()=>
+  
+  [...catalogoStore.series]
   .sort((a,b)=> b.puntuacion - a.puntuacion)
   .slice(0,5)
     
@@ -35,46 +43,84 @@ const top5 = computed(()=>
   <div class="Home">
     <h1>Cine</h1>
 
-    <h3>Top Mejores Peliculas y Series</h3>
     <p v-if="isLoading">Cargando...</p>
     <div v-if="isError">
       <button @click="isError = false">Cerrar</button>
       <p>Error al cargar</p>
     </div>
 
-    <div v-for="t in top5" :key="t.id">
-      <img :src="t.poster" :alt="t.titulo" />
+    <h3>Top 5 Películas</h3>
+    <div class="grilla">
+      <div class="tarjeta" v-for="t in top5Peliculas" :key="t.id">
+        <img :src="t.poster" :alt="t.titulo" />
         <h2>{{ t.titulo }}</h2>
         <p>⭐ {{ t.puntuacion }}</p>
+      </div>
+    </div>
+
+    <h3>Top 5 Series</h3>
+    <div class="grilla">
+      <div class="tarjeta" v-for="t in top5Series" :key="t.id">
+        <img :src="t.poster" :alt="t.titulo" />
+        <h2>{{ t.titulo }}</h2>
+        <p>⭐ {{ t.puntuacion }}</p>
+      </div>
     </div>
 
     <div class="botones">
-
-      <router-link to="/catalogo" class="boton">Ir al catalogos</router-link>
+      <router-link to="/catalogo" class="boton">Ir al catálogo</router-link>
       <router-link to="/favoritos" class="boton">Mis favoritos</router-link>
-
     </div>
   </div>
 </template>
 
 <style scoped>
-
-.home{
+.Home {
   padding: 30px;
 }
 
-.botones{
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.tarjeta {
+  background: #1a1a1a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tarjeta img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.tarjeta h2 {
+  font-size: 14px;
+  padding: 0.5rem;
+  margin: 0;
+}
+
+.tarjeta p {
+  font-size: 12px;
+  color: #aaa;
+  margin: 0;
+  padding: 0 0.5rem 0.5rem;
+}
+
+.botones {
   display: flex;
   gap: 20px;
   margin-top: 20px;
 }
 
-.boton{
+.boton {
   background: rgb(236, 61, 96);
   color: white;
   padding: 10px 20px;
   border-radius: 10px;
   text-decoration: none;
 }
-
 </style>

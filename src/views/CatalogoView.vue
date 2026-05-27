@@ -51,7 +51,7 @@ const contenidoFiltrado = computed(() =>
 <template>
   <div class="catalogo">
     <h1>Catálogo</h1>
-
+    <p><router-link to="/" class="botonHome">Volver al Home</router-link></p>
     <!-- Barra de búsqueda avanzada -->
     <input type="text" v-model="busqueda" placeholder="Buscar por título..." />
 
@@ -137,4 +137,13 @@ const contenidoFiltrado = computed(() =>
   margin: 0;
   padding: 0 0.5rem 0.5rem;
 }
+
+.botonHome {
+  background: rgb(236, 61, 96);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
 </style>

@@ -42,7 +42,7 @@ async function eliminarFavorito(id) {
 <template>
   <div class="favoritos">
     <h1>Favoritos</h1>
-
+    <p><router-link to="/" class="botonHome">Volver al Home</router-link></p>
     <p v-if="isLoading">Cargando...</p>
 
     <div v-if="isError">
@@ -118,5 +118,13 @@ async function eliminarFavorito(id) {
   border: none;
   cursor: pointer;
   font-size: 12px;
+}
+
+.botonHome {
+  background: rgb(236, 61, 96);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-decoration: none;
 }
 </style>
