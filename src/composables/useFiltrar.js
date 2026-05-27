@@ -1,4 +1,6 @@
-export function filtrar(lista, { busqueda, generoSeleccionado, añoSeleccionado }) {
+export function useFiltrar(){
+
+function filtrar(lista, { busqueda, generoSeleccionado, añoSeleccionado }) {
 if (!lista || lista.length === 0) return []
 let resultado = [...lista]
 
@@ -20,4 +22,8 @@ if (generoSeleccionado) {
 }
 
 return resultado
+}
+
+return { filtrar }
+
 }

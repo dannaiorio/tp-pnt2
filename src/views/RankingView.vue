@@ -2,11 +2,11 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useVotosStore } from "../stores/useVotosStore";
-import { filtrar } from "@/utils/filtrar";
+import { useFiltrar } from "@/composables/useFiltrar";
 
 const store = useVotosStore();
 const router = useRouter();
-
+const { filtrar } = useFiltrar();
 
 const isLoading = ref(false);
 const isError = ref(false);

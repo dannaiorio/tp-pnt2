@@ -28,8 +28,6 @@ async function cargar() {
   }
 }
 
-
-
 async function eliminarFavorito(id) {
     await fetch(`${URL_FAVORITOS}/${id}`, {
     method: 'DELETE'
