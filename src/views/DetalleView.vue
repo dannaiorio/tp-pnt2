@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import vue3StarRatings from "vue3-star-ratings";
 import { useFavoritosStore } from "@/stores/useFavoritosStore";
 import { useVotosStore } from "../stores/useVotosStore";
+import confetti from 'canvas-confetti'
 
 const favoritosStore = useFavoritosStore();
 const URL_FAVORITOS = "https://6a03ce8d2afe8349b4b583b8.mockapi.io/favoritos";
@@ -47,18 +48,37 @@ async function getDetalle() {
   }
 }
 
-async function agregarFavorito(item) {
+async function agregarFavorito(item, event) {
+  const rect = event.currentTarget.getBoundingClientRect()  
+
   const yaExiste = favoritosStore.favoritos.some(f => f.peliculaId === item.id)
   if (yaExiste) {
     alert('Ya está en favoritos')
     return
   }
+
   await fetch(URL_FAVORITOS, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...item, peliculaId: item.id })
   })
   await favoritosStore.fetchFavoritos()
+
+
+
+const corazon = confetti.shapeFromText({ text: '❤️', scalar: 2 })
+
+confetti({
+  particleCount: 40,
+  spread: 60,
+  shapes: [corazon],
+  scalar: 2,
+  colors: ['#e24b4a', '#ff6b6b', '#ff8fab'],
+  origin: {
+    x: (rect.left + rect.width / 2) / window.innerWidth,
+    y: (rect.top + rect.height / 2) / window.innerHeight,
+  }
+  })
 }
 
 async function votarPelicula() {
@@ -102,9 +122,11 @@ async function votarPelicula() {
     </div>
     <div>
       <p
-        ><button @click="agregarFavorito(item)" class="boton">
-          Agregar a favoritos ❤️
-        </button></p
+        >
+       <button @click="agregarFavorito(item, $event)" class="boton">
+  Agregar a favoritos ❤️
+</button>
+        </p
       >
 
       <button @click="irAlCatalogo" class="boton">Ir al catálogo</button>
