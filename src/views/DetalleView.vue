@@ -6,7 +6,8 @@ import { useFavoritosStore } from "@/stores/useFavoritosStore";
 import { useVotosStore } from "../stores/useVotosStore";
 import confetti from 'canvas-confetti'
 import { useCatalogoStore } from '@/stores/useCatalogoStore'
- 
+import { useAuthStore } from "@/stores/useAuthStore"; 
+
 const favoritosStore = useFavoritosStore();
 const URL_FAVORITOS = "https://6a03ce8d2afe8349b4b583b8.mockapi.io/favoritos";
 const URL_VOTOS = "https://6a03ce8d2afe8349b4b583b8.mockapi.io/votos";
@@ -18,7 +19,8 @@ const item = ref(null);
 const isLoading = ref(false);
 const isError = ref(false);
 const votado = ref(false);
-const catalogoStore = useCatalogoStore()
+const catalogoStore = useCatalogoStore();
+const authStore = useAuthStore();
 
 const esSerie = computed(() => 
   catalogoStore.series.some(s => s.id === item.value?.id)
@@ -53,7 +55,7 @@ async function agregarFavorito(item, event) {
   await fetch(URL_FAVORITOS, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...item, peliculaId: item.id })
+    body: JSON.stringify({ ...item, peliculaId: item.id, usuarioId:authStore.usuarioLogueado.id })
   })
   await favoritosStore.fetchFavoritos()
   const corazon = confetti.shapeFromText({ text: '❤️', scalar: 2 })

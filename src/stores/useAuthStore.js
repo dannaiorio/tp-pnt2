@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useFavoritosStore } from '@/stores/useFavoritosStore';
  
-const URL_USUARIOS = 'https://6a03ce8d2afe8349b4b583b8.mockapi.io/usuarios'
+const URL_USUARIOS = 'https://6a31d6a07bc5e1c612663f52.mockapi.io/usuarios'
  
 export const useAuthStore = defineStore('auth', () => {
   const usuarioLogueado = ref(null)
@@ -21,7 +22,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
  
   function logout() {
-    usuarioLogueado.value = null
+    useFavoritosStore().favoritos.value = [];
+    useAuthStore.logout()
+    router.push('/login');
   }
  
   return { usuarioLogueado, estaLogueado, esAdmin, login, logout }
