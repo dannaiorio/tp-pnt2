@@ -1,23 +1,54 @@
 <script setup>
-import { computed } from 'vue'
+import { useAuthStore } from '@/stores/useAuthStore'
 import { useFavoritosStore } from '@/stores/useFavoritosStore'
+import { useRouter } from 'vue-router'
+ 
+const authStore = useAuthStore()
+const favoritosStore = useFavoritosStore()
+const router = useRouter()
+ 
+function logout() {
+  authStore.logout()
+  router.push('/login')
+}
 </script>
  
 <template>
-  <nav class="navbar" :class="{ 'navbar-solid': true }">
+  <nav class="navbar navbar-solid">
     <router-link to="/" class="nav-brand">
       <span class="brand-mark">◐</span>CINE-ORT
     </router-link>
+ 
     <div class="nav-links">
       <router-link to="/" class="nav-link">Inicio</router-link>
       <router-link to="/catalogo" class="nav-link">Catálogo</router-link>
-      <router-link to="/ranking" class="nav-link">Ranking</router-link>
-      <router-link to="/favoritos" class="nav-link nav-link-fav">
-        Favoritos
-        <span class="nav-badge" v-if="useFavoritosStore().favoritos.length > 0">
-          {{ useFavoritosStore().favoritos.length }}
-        </span>
+ 
+      <!-- Solo si NO es admin -->
+      <template v-if="!authStore.esAdmin">
+        <router-link to="/ranking" class="nav-link">Ranking</router-link>
+        <router-link to="/favoritos" class="nav-link nav-link-fav">
+          Favoritos
+          <span class="nav-badge" v-if="favoritosStore.favoritos.length > 0">
+            {{ favoritosStore.favoritos.length }}
+          </span>
+        </router-link>
+      </template>
+ 
+      <!-- Solo si es admin -->
+      <router-link v-if="authStore.esAdmin" to="/admin" class="nav-link nav-link-admin">
+        ⚙️ Admin
       </router-link>
+    </div>
+ 
+    <!-- Auth -->
+    <div class="nav-auth">
+      <template v-if="authStore.estaLogueado">
+        <span class="nav-usuario">{{ authStore.usuarioLogueado.email }}</span>
+        <button class="boton-secundario btn-logout" @click="logout">Salir</button>
+      </template>
+      <template v-else>
+        <router-link to="/login" class="boton btn-login-nav">Ingresar</router-link>
+      </template>
     </div>
   </nav>
  
@@ -63,25 +94,19 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: var(--navbar-h);
-  background: rgba(13,13,13,0.0);
-  backdrop-filter: blur(0px);
-  border-bottom: 1px solid transparent;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 0 2rem;
   z-index: 200;
   transition: background 0.3s, backdrop-filter 0.3s, border-color 0.3s;
-    display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
 }
  
 .navbar-solid {
   background: rgba(13,13,13,0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom-color: var(--borde);
+  border-bottom: 1px solid var(--borde);
 }
  
 .nav-brand {
@@ -95,17 +120,13 @@ body {
   gap: 0.4rem;
 }
  
-.brand-mark {
-  font-size: 1.3rem;
-  opacity: 0.9;
-}
+.brand-mark { font-size: 1.3rem; opacity: 0.9; }
  
 .nav-links {
   display: flex;
-  gap: 6rem;
+  gap: 3rem;
   align-items: center;
-  font-size: 14px;
-   justify-self: center;
+  justify-self: center;
 }
  
 .nav-link {
@@ -113,20 +134,23 @@ body {
   text-decoration: none;
   padding: 0.4rem 0.85rem;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   transition: color 0.18s, background 0.18s;
-  position: relative;
   letter-spacing: 1.5px;
-text-transform: uppercase;
+  text-transform: uppercase;
 }
  
 .nav-link:hover { color: var(--texto); background: rgba(255,255,255,0.05); }
  
 .nav-link.router-link-active {
-  color: var(--texto);
-  background: rgba(236, 61, 96, 0.12);
   color: var(--acento);
+  background: rgba(236, 61, 96, 0.12);
+}
+ 
+.nav-link-admin {
+  color: var(--acento) !important;
+  border: 1px solid rgba(212,46,148,0.3);
 }
  
 .nav-badge {
@@ -143,6 +167,33 @@ text-transform: uppercase;
   border-radius: 9px;
   margin-left: 5px;
   vertical-align: middle;
+}
+ 
+/* Auth */
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-self: end;
+}
+ 
+.nav-usuario {
+  font-size: 12px;
+  color: var(--texto-suave);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+ 
+.btn-logout {
+  padding: 0.4rem 0.9rem;
+  font-size: 13px;
+}
+ 
+.btn-login-nav {
+  padding: 0.4rem 1rem;
+  font-size: 13px;
 }
  
 /* ── Main ── */
@@ -185,14 +236,14 @@ text-transform: uppercase;
 .boton-secundario:hover { border-color: #555; color: var(--texto); }
  
 /* ── Inputs globales ── */
-input[type="text"], select {
+input[type="text"], input[type="password"], select {
   background: var(--fondo-card); border: 1px solid var(--borde);
   color: var(--texto); padding: 0.6rem 1rem;
   border-radius: 8px;
   font-family: 'DM Sans', sans-serif; font-size: 14px;
   outline: none; transition: border-color 0.18s;
 }
-input[type="text"]:focus, select:focus { border-color: var(--acento); }
+input[type="text"]:focus, input[type="password"]:focus, select:focus { border-color: var(--acento); }
 select option { background: #1a1a1a; }
  
 /* ── Spinner global ── */
@@ -272,15 +323,6 @@ h2 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
   width: 100%; border-radius: 10px;
   box-shadow: 0 12px 32px rgba(0,0,0,0.6);
   display: block;
-}
- 
-.modal-poster-gradient {
-  width: 100%; aspect-ratio: 2/3;
-  border-radius: 10px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-  display: flex; flex-direction: column;
-  align-items: flex-start; justify-content: flex-end;
-  padding: 1rem; overflow: hidden; position: relative;
 }
  
 .modal-info { flex: 1; padding-top: 0.5rem; }
