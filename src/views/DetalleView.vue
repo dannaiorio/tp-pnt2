@@ -46,6 +46,7 @@ async function getDetalle() {
 }
  
 async function agregarFavorito(item, event) {
+  console.log('usuario logueado:', authStore.usuarioLogueado)
   const rect = event.currentTarget.getBoundingClientRect()
   const yaExiste = favoritosStore.favoritos.some(f => f.peliculaId === item.id)
   if (yaExiste) {

@@ -8,6 +8,7 @@ const favoritosStore = useFavoritosStore()
 const router = useRouter()
  
 function logout() {
+  favoritosStore.favoritos = []
   authStore.logout()
   router.push('/login')
 }
