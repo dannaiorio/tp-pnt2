@@ -15,7 +15,7 @@ const router = createRouter({
     { path: "/", component: HomeView }, 
     { path: "/home", component: HomeView }, 
     { path: "/catalogo", component: CatalogoView },
-    { path: "/detalle/:id", component: DetalleView }, // :id ruta dinamica
+    { path: "/detalle/:id", component: DetalleView }, 
     { path: "/favoritos", component: FavoritosView },
     { path: "/ranking", component: RankingView },
        { path: "/login", component: LoginView },

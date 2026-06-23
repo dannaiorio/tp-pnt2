@@ -88,7 +88,7 @@ onMounted(async () => {
   }
 })
 
-// ── Favoritos ───────────────────────────────────────────────────
+// Favs
 const datosFavoritos = computed(() => {
   const conteo = {}
   favoritosStore.favoritos.forEach(f => {
@@ -112,7 +112,7 @@ const chartFavoritos = computed(() => ({
   }]
 }))
 
-// ── Votos ───────────────────────────────────────────────────────
+// Votos
 const datosVotos = computed(() => {
   const acumulador = {}
   votosStore.votos.forEach(v => {

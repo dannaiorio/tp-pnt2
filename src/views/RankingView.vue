@@ -57,7 +57,7 @@ const rankingSeries = computed(() => {
       <button @click="busqueda = ''" class="boton-secundario">✕ Limpiar</button>
     </div>
  
-    <!-- Estados -->
+  
     <div v-if="isLoading" class="estado">
       <div class="spinner"></div>
       <p>Cargando ranking...</p>
