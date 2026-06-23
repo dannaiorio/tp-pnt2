@@ -27,6 +27,10 @@ const esSerie = computed(() =>
 )
  
 onMounted(() => getDetalle());
+
+function volver() {
+  router.back()
+}
  
 async function getDetalle() {
   try {
@@ -95,70 +99,71 @@ async function votarPelicula() {
  
 <template>
   <div class="detalle">
- 
+
     <div v-if="isLoading" class="estado">
       <div class="spinner"></div>
       <p>Cargando...</p>
     </div>
- 
+
     <div v-if="isError" class="error-banner">
       <p>⚠️ Error al cargar el detalle</p>
       <button @click="isError = false" class="boton">Cerrar</button>
     </div>
- 
+
     <div v-if="item">
-      <!-- Fondo difuminado con el poster -->
       <div class="hero-bg" :style="{ backgroundImage: `url(${item.poster})` }"></div>
- 
+
       <div class="contenido">
         <!-- Poster -->
         <div class="poster-col">
           <img :src="item.poster" :alt="item.titulo" class="poster" />
         </div>
- 
+
         <!-- Info -->
         <div class="info-col">
           <div class="badges">
             <span class="badge-genero">{{ item.genero }}</span>
             <span class="badge-año">{{ item.año }}</span>
           </div>
- 
+
           <h1 class="titulo">{{ item.titulo }}</h1>
- 
+
           <div class="puntuacion">
             <span class="estrella">⭐</span>
             <span class="puntaje">{{ item.puntuacion }}</span>
             <span class="puntaje-max">/10</span>
           </div>
- 
+
           <p class="descripcion">{{ item.descripcion }}</p>
- 
+
           <!-- Acciones -->
           <div class="acciones">
             <button @click="agregarFavorito(item, $event)" class="boton boton-favorito">
               ❤️ Agregar a favoritos
             </button>
-            <router-link to="/catalogo" class="boton-secundario">← Volver</router-link>
           </div>
- 
+
           <!-- Votación -->
           <div class="votacion">
             <p class="votacion-titulo">Tu puntuación</p>
             <vue3-star-ratings v-model="puntuacion" :numberOfStars="10" />
             <p class="elegiste" v-if="puntuacion > 0">Elegiste: <strong>{{ puntuacion }}/10</strong></p>
- 
+
             <div v-if="votado" class="voto-ok">
               ✅ ¡Voto registrado! Gracias por tu opinión.
             </div>
- 
-           <button class="boton" @click="votarPelicula">
-                 Votar {{ esSerie ? 'serie' : 'película' }}
-          </button>
+
+            <button class="boton" @click="votarPelicula">
+              Votar {{ esSerie ? 'serie' : 'película' }}
+            </button>
           </div>
+
+          <!-- Volver -->
+          <button class="boton-secundario btn-volver" @click="volver()">← Volver</button>
         </div>
       </div>
     </div>
- 
+
   </div>
 </template>
  
@@ -299,6 +304,10 @@ async function votarPelicula() {
   padding: 0.6rem 1rem;
   border-radius: 8px;
   font-size: 14px;
+}
+.btn-volver {
+  align-self: flex-start;
+  margin-top: 0.5rem;
 }
  
 /* Estado de carga */
