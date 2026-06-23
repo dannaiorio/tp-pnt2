@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import vue3StarRatings from "vue3-star-ratings";
+import Rating from 'primevue/rating';
 import { useFavoritosStore } from "@/stores/useFavoritosStore";
 import { useVotosStore } from "../stores/useVotosStore";
 import confetti from 'canvas-confetti'
@@ -79,16 +79,35 @@ async function agregarFavorito(item, event) {
  
 async function votarPelicula() {
   try {
-    await fetch(URL_VOTOS, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        peliculaId: item.value.id,
-        titulo: item.value.titulo,
-        poster: item.value.poster,
-        puntuacion: Number(puntuacion.value)
+    // Buscar si el usuario ya votó esta película
+    const res = await fetch(URL_VOTOS)
+    const todos = await res.json()
+    const votoExistente = todos.find(
+      v => v.usuarioId === authStore.usuarioLogueado.id && v.peliculaId === item.value.id
+    )
+
+    if (votoExistente) {
+      // Ya votó — actualizamos
+      await fetch(`${URL_VOTOS}/${votoExistente.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ puntuacion: Number(puntuacion.value) })
       })
-    })
+    } else {
+      // Primera vez — creamos
+      await fetch(URL_VOTOS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          peliculaId: item.value.id,
+          titulo: item.value.titulo,
+          poster: item.value.poster,
+          puntuacion: Number(puntuacion.value),
+          usuarioId: authStore.usuarioLogueado.id
+        })
+      })
+    }
+
     await store.fetchVotos()
     votado.value = true
   } catch (error) {
@@ -146,16 +165,14 @@ async function votarPelicula() {
           <!-- Votación -->
           <div class="votacion">
             <p class="votacion-titulo">Tu puntuación</p>
-            <vue3-star-ratings v-model="puntuacion" :numberOfStars="10" />
+            <Rating v-model="puntuacion" :stars="10" :cancel="false" @change="votarPelicula" />
             <p class="elegiste" v-if="puntuacion > 0">Elegiste: <strong>{{ puntuacion }}/10</strong></p>
 
             <div v-if="votado" class="voto-ok">
               ✅ ¡Voto registrado! Gracias por tu opinión.
             </div>
 
-            <button class="boton" @click="votarPelicula">
-              Votar {{ esSerie ? 'serie' : 'película' }}
-            </button>
+           
           </div>
 
           <!-- Volver -->
@@ -192,6 +209,8 @@ async function votarPelicula() {
   margin: 0 auto;
   align-items: flex-start;
 }
+
+
  
 /* Poster */
 .poster-col {
@@ -251,7 +270,7 @@ async function votarPelicula() {
   gap: 0.3rem;
 }
  
-.estrella { font-size: 1.2rem; }
+.estrella { font-size: 1.8rem; }
 .puntaje { font-size: 2rem; font-weight: 700; color: var(--texto); }
 .puntaje-max { font-size: 1rem; color: var(--texto-suave); }
  
@@ -355,4 +374,11 @@ async function votarPelicula() {
   }
 }
 </style>
- 
+
+<style>
+.p-rating .p-rating-icon {
+  font-size: 1.8rem !important;
+  width: 1.8rem !important;
+  height: 1.8rem !important;
+}
+</style>

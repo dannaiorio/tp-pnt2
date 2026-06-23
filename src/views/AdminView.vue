@@ -114,13 +114,17 @@ const chartFavoritos = computed(() => ({
 
 // ── Votos ───────────────────────────────────────────────────────
 const datosVotos = computed(() => {
-  const conteo = {}
+  const acumulador = {}
   votosStore.votos.forEach(v => {
     const titulo = v.titulo || `ID ${v.peliculaId}`
-    conteo[titulo] = (conteo[titulo] || 0) + 1
+    if (!acumulador[titulo]) {
+      acumulador[titulo] = { titulo, cantidad: 0, suma: 0 }
+    }
+    acumulador[titulo].cantidad++
+    acumulador[titulo].suma += Number(v.puntuacion)
   })
-  return Object.entries(conteo)
-    .map(([titulo, cantidad]) => ({ titulo, cantidad }))
+  return Object.values(acumulador)
+    .map(d => ({ ...d, promedio: (d.suma / d.cantidad).toFixed(1) }))
     .sort((a, b) => b.cantidad - a.cantidad)
 })
 
@@ -212,7 +216,7 @@ const peliculaMasVotada = computed(() => datosVotos.value[0]?.titulo || '—')
         </div>
       </div>
 
-      <!-- ── Destacadas del día ── -->
+      <!-- Destacadas del día -->
       <div class="seccion">
         <div class="seccion-head">
           <h2 class="seccion-titulo">🎯 Destacadas del día</h2>
@@ -221,7 +225,6 @@ const peliculaMasVotada = computed(() => datosVotos.value[0]?.titulo || '—')
 
         <div class="destacadas-grid">
           <div v-for="(_, i) in 3" :key="i" class="slot">
-            <!-- Preview de la película seleccionada -->
             <div class="slot-preview" :style="peliculaDeSlot(i) ? { backgroundImage: `url(${peliculaDeSlot(i).poster})` } : {}">
               <div class="slot-overlay">
                 <span v-if="peliculaDeSlot(i)" class="slot-titulo">{{ peliculaDeSlot(i).titulo }}</span>
@@ -229,8 +232,6 @@ const peliculaMasVotada = computed(() => datosVotos.value[0]?.titulo || '—')
               </div>
               <span class="slot-num">#{{ i + 1 }}</span>
             </div>
-
-            <!-- Select de película -->
             <select v-model="seleccion[i]" class="slot-select">
               <option disabled value="null">Elegir película...</option>
               <optgroup label="Películas">
@@ -306,6 +307,7 @@ const peliculaMasVotada = computed(() => datosVotos.value[0]?.titulo || '—')
             <span>#</span>
             <span>Película / Serie</span>
             <span>Cantidad de votos</span>
+            <span>Promedio</span>
           </div>
           <div v-for="(item, i) in datosVotos" :key="item.titulo" class="tabla-row">
             <span class="pos">{{ i + 1 }}</span>
@@ -314,6 +316,7 @@ const peliculaMasVotada = computed(() => datosVotos.value[0]?.titulo || '—')
               <span class="barra-inline barra-inline--votos" :style="{ width: (item.cantidad / datosVotos[0].cantidad * 100) + '%' }"></span>
               {{ item.cantidad }}
             </span>
+            <span class="chip-promedio">⭐ {{ item.promedio }}</span>
           </div>
         </div>
       </div>
@@ -524,12 +527,18 @@ const peliculaMasVotada = computed(() => datosVotos.value[0]?.titulo || '—')
 
 .tabla-row {
   display: grid;
-  grid-template-columns: 36px 1fr 200px;
+  grid-template-columns: 36px 1fr 200px 80px;
   align-items: center;
   gap: 1rem;
   padding: 0.65rem 1rem;
   border-bottom: 1px solid var(--borde);
   font-size: 14px;
+}
+
+.chip-promedio {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto);
 }
 
 .tabla-row:last-child { border-bottom: none; }
