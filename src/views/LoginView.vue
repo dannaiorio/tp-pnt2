@@ -2,10 +2,13 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useRoute } from 'vue-router'
  
 const authStore = useAuthStore()
 const router = useRouter()
- 
+const route = useRoute()
+
+
 const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
@@ -21,7 +24,8 @@ async function handleLogin() {
     error.value = ''
     const ok = await authStore.login(email.value, password.value)
     if (ok) {
-      router.push(authStore.esAdmin ? '/admin' : '/')
+     const redirect = route.query.redirect
+      router.push(redirect || (authStore.esAdmin ? '/admin' : '/'))
     } else {
       error.value = 'Email o contraseña incorrectos'
     }

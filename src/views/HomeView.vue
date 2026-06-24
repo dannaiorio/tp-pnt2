@@ -42,10 +42,10 @@ const heroItems = computed(() => {
 
 const heroItem = computed(() => heroItems.value[heroIndex.value] || null)
 
-const top5Peliculas = computed(() =>
+const top10Peliculas = computed(() =>
   [...catalogoStore.peliculas].sort((a, b) => b.puntuacion - a.puntuacion).slice(0, 10)
 )
-const top5Series = computed(() =>
+const top10Series = computed(() =>
   [...catalogoStore.series].sort((a, b) => b.puntuacion - a.puntuacion).slice(0, 10)
 )
 </script>
@@ -104,8 +104,8 @@ const top5Series = computed(() =>
 
     <!-- FILAS -->
     <div v-if="!isLoading" class="filas">
-      <RowScroll titulo="🎬 Top Películas" :items="top5Peliculas" />
-      <RowScroll titulo="📺 Top Series" :items="top5Series" />
+      <RowScroll titulo="🎬 Top Películas" :items="top10Peliculas" />
+      <RowScroll titulo="📺 Top Series" :items="top10Series" />
     </div>
 
   </div>

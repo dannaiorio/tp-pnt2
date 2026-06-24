@@ -24,8 +24,10 @@ async function cargar() {
   }
 }
  
-async function eliminarFavorito(id) {
-  await fetch(`${URL_FAVORITOS}/${id}`, { method: 'DELETE' })
+async function eliminarFavorito() {
+  const fav = favoritosStore.favoritos.find(f => f.peliculaId === item.value.id)
+  if (!fav) return
+  await fetch(`${URL_FAVORITOS}/${fav.id}`, { method: 'DELETE' })
   await favoritosStore.fetchFavoritos()
 }
 </script>

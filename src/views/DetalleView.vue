@@ -26,7 +26,37 @@ const esSerie = computed(() =>
   catalogoStore.series.some(s => s.id === item.value?.id)
 )
  
-onMounted(() => getDetalle());
+onMounted(async () => {
+  await getDetalle()
+  await store.fetchVotos()
+  await favoritosStore.fetchFavoritos()
+
+  if (authStore.estaLogueado) {
+    const votoAnterior = store.votos.find(
+      v => v.usuarioId === authStore.usuarioLogueado.id && v.peliculaId === item.value?.id
+    )
+    if (votoAnterior) {
+      puntuacion.value = votoAnterior.puntuacion
+      votado.value = true
+    }
+  }
+
+  const pendiente = localStorage.getItem('puntuacionPendiente')
+  if (pendiente) {
+    puntuacion.value = Number(pendiente)
+    localStorage.removeItem('puntuacionPendiente')
+    await votarPelicula()
+  }
+
+  const favPendiente = localStorage.getItem('favoritoPendiente')
+  if (favPendiente && authStore.estaLogueado) {
+    localStorage.removeItem('favoritoPendiente')
+    const boton = document.querySelector('.boton-favorito')
+    if (boton) {
+      await agregarFavorito(item.value, { currentTarget: boton })
+    }
+  }
+})
 
 function volver() {
   router.back()
@@ -50,7 +80,11 @@ async function getDetalle() {
 }
  
 async function agregarFavorito(item, event) {
-  console.log('usuario logueado:', authStore.usuarioLogueado)
+  if (!authStore.estaLogueado) {
+    localStorage.setItem('favoritoPendiente', item.id)
+    router.push('/login?redirect=' + route.fullPath)
+    return
+  }
   const rect = event.currentTarget.getBoundingClientRect()
   const yaExiste = favoritosStore.favoritos.some(f => f.peliculaId === item.id)
   if (yaExiste) {
@@ -60,7 +94,7 @@ async function agregarFavorito(item, event) {
   await fetch(URL_FAVORITOS, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...item, peliculaId: item.id, usuarioId:authStore.usuarioLogueado.id })
+    body: JSON.stringify({ ...item, peliculaId: item.id, usuarioId: authStore.usuarioLogueado.id })
   })
   await favoritosStore.fetchFavoritos()
   const corazon = confetti.shapeFromText({ text: '❤️', scalar: 2 })
@@ -76,10 +110,19 @@ async function agregarFavorito(item, event) {
     }
   })
 }
+
+const yaEsFavorito = computed(() =>
+  favoritosStore.favoritos.some(f => f.peliculaId === item.value?.id)
+)
  
-async function votarPelicula() {
+async function votarPelicula(valorNuevo) {
+  if (valorNuevo !== undefined) puntuacion.value = valorNuevo  // asegura el valor actualizado
+  if (!authStore.estaLogueado) {
+    localStorage.setItem('puntuacionPendiente', puntuacion.value)
+    router.push('/login?redirect=' + route.fullPath)
+    return
+  }
   try {
-    // Buscar si el usuario ya votó esta película
     const res = await fetch(URL_VOTOS)
     const todos = await res.json()
     const votoExistente = todos.find(
@@ -87,14 +130,12 @@ async function votarPelicula() {
     )
 
     if (votoExistente) {
-      // Ya votó — actualizamos
       await fetch(`${URL_VOTOS}/${votoExistente.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ puntuacion: Number(puntuacion.value) })
       })
     } else {
-      // Primera vez — creamos
       await fetch(URL_VOTOS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,6 +155,15 @@ async function votarPelicula() {
     alert("Error al registrar voto")
   }
 }
+async function eliminarFavorito() {
+  const fav = favoritosStore.favoritos.find(f => f.peliculaId === item.value.id)
+  if (!fav) return
+  await fetch(`${URL_FAVORITOS}/${fav.id}`, { method: 'DELETE' })
+  await favoritosStore.fetchFavoritos()
+}
+
+  
+
 </script>
  
 <template>
@@ -156,16 +206,28 @@ async function votarPelicula() {
           <p class="descripcion">{{ item.descripcion }}</p>
 
           <!-- Acciones -->
-          <div class="acciones">
-            <button @click="agregarFavorito(item, $event)" class="boton boton-favorito">
-              ❤️ Agregar a favoritos
-            </button>
-          </div>
+        <div class="acciones">
+  <button 
+    v-if="!yaEsFavorito"
+    @click="agregarFavorito(item, $event)" 
+    class="boton boton-favorito">
+    ❤️ Agregar a favoritos
+  </button>
+
+  <template v-else>
+    <span class="boton boton-favorito" style="opacity: 1; cursor: default">
+      ✅ Ya está en tu lista
+    </span>
+    <button @click="eliminarFavorito" class="boton-secundario">
+      🗑 Quitar de Favoritos
+    </button>
+  </template>
+</div>
 
           <!-- Votación -->
           <div class="votacion">
             <p class="votacion-titulo">Tu puntuación</p>
-            <Rating v-model="puntuacion" :stars="10" :cancel="false" @change="votarPelicula" />
+            <Rating v-model="puntuacion" :stars="10" :cancel="false" @update:modelValue="votarPelicula" />
             <p class="elegiste" v-if="puntuacion > 0">Elegiste: <strong>{{ puntuacion }}/10</strong></p>
 
             <div v-if="votado" class="voto-ok">

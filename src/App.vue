@@ -25,15 +25,16 @@ function logout() {
       <router-link to="/catalogo" class="nav-link">Catálogo</router-link>
  
       <!-- Solo si NO es admin -->
-      <template v-if="!authStore.esAdmin">
-        <router-link to="/ranking" class="nav-link">Ranking</router-link>
-        <router-link to="/favoritos" class="nav-link nav-link-fav">
-          Favoritos
-          <span class="nav-badge" v-if="favoritosStore.favoritos.length > 0">
-            {{ favoritosStore.favoritos.length }}
+     <template v-if="!authStore.esAdmin">
+     <router-link to="/ranking" class="nav-link">Ranking</router-link>
+
+     <router-link v-if="authStore.estaLogueado" to="/favoritos" class="nav-link nav-link-fav">
+            Favoritos
+            <span class="nav-badge" v-if="favoritosStore.favoritos.length > 0">
+          {{ favoritosStore.favoritos.length }}
           </span>
         </router-link>
-      </template>
+    </template>
  
       <!-- Solo si es admin -->
       <router-link v-if="authStore.esAdmin" to="/admin" class="nav-link nav-link-admin">
