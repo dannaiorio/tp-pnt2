@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-// import HomeView from '../views/HomeView.vue'
+
 import CatalogoView from "../views/CatalogoView.vue";
 import DetalleView from "../views/DetalleView.vue";
 import FavoritosView from "../views/FavoritosView.vue";
@@ -25,7 +25,7 @@ const router = createRouter({
   ],
 });
 
-// Guard de navegación — se importa el store acá adentro para que Pinia ya esté montado
+
 router.beforeEach(async (to) => {
   if (to.meta.soloAdmin) {
     const { useAuthStore } = await import("../stores/useAuthStore.js");

@@ -24,8 +24,8 @@ const isError = ref(false)
 
 const URL_DESTACADAS = 'https://6a31d6a07bc5e1c612663f52.mockapi.io/destacadas'
 
-// ── Destacadas ──────────────────────────────────────────────────
-const destacadas = ref([]) // [{ id, peliculaId }]
+
+const destacadas = ref([]) 
 const guardando = ref(false)
 const guardadoOk = ref(false)
 
@@ -34,10 +34,10 @@ async function fetchDestacadas() {
   destacadas.value = await res.json()
 }
 
-// Para cada slot (0,1,2) el peliculaId elegido
+
 const seleccion = ref([null, null, null])
 
-// Cuando cargan las destacadas, sincronizamos la selección
+
 function sincronizarSeleccion() {
   destacadas.value.forEach((d, i) => {
     if (i < 3) seleccion.value[i] = d.peliculaId
@@ -66,7 +66,7 @@ async function guardarDestacadas() {
   }
 }
 
-// Película seleccionada para cada slot
+
 function peliculaDeSlot(i) {
   return catalogoStore.contenido.find(p => p.id === Number(seleccion.value[i])) || null
 }
@@ -88,7 +88,7 @@ onMounted(async () => {
   }
 })
 
-// Favs
+
 const datosFavoritos = computed(() => {
   const conteo = {}
   favoritosStore.favoritos.forEach(f => {
@@ -167,7 +167,7 @@ const chartOptions = {
   }
 }
 
-// Stats rápidas
+
 const totalFavoritos = computed(() => favoritosStore.favoritos.length)
 const totalVotos = computed(() => votosStore.votos.length)
 const peliculaMasFavoritada = computed(() => datosFavoritos.value[0]?.titulo || '—')

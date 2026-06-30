@@ -32,7 +32,7 @@ onMounted(async () => {
   }
 })
 
-// Las 3 películas destacadas elegidas por el admin
+
 const heroItems = computed(() => {
   if (!destacadasIds.value.length) return []
   return destacadasIds.value
