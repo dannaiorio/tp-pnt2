@@ -5,7 +5,6 @@ import Rating from 'primevue/rating';
 import { useFavoritosStore } from "@/stores/useFavoritosStore";
 import { useVotosStore } from "../stores/useVotosStore";
 import confetti from 'canvas-confetti'
-import { useCatalogoStore } from '@/stores/useCatalogoStore'
 import { useAuthStore } from "@/stores/useAuthStore"; 
 
 const favoritosStore = useFavoritosStore();
@@ -19,12 +18,10 @@ const item = ref(null);
 const isLoading = ref(false);
 const isError = ref(false);
 const votado = ref(false);
-const catalogoStore = useCatalogoStore();
+
 const authStore = useAuthStore();
 
-const esSerie = computed(() => 
-  catalogoStore.series.some(s => s.id === item.value?.id)
-)
+
  
 onMounted(async () => {
   await getDetalle()
