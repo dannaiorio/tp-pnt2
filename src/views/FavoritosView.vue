@@ -5,7 +5,7 @@ import { useFavoritosStore } from "@/stores/useFavoritosStore";
 import TarjetaContenido from '@/components/TarjetaContenido.vue';
  
 const favoritosStore = useFavoritosStore();
-const router = useRouter();
+const router = useRouter(); //NO LO ESTAMOS USANDO
 const URL_FAVORITOS = "https://6a03ce8d2afe8349b4b583b8.mockapi.io/favoritos";
 const isLoading = ref(false);
 const isError = ref(false);
@@ -24,10 +24,8 @@ async function cargar() {
   }
 }
  
-async function eliminarFavorito() {
-  const fav = favoritosStore.favoritos.find(f => f.peliculaId === item.value.id)
-  if (!fav) return
-  await fetch(`${URL_FAVORITOS}/${fav.id}`, { method: 'DELETE' })
+async function eliminarFavorito(id) {
+  await fetch(`${URL_FAVORITOS}/${id}`, { method: 'DELETE' })
   await favoritosStore.fetchFavoritos()
 }
 </script>

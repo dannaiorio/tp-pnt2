@@ -35,8 +35,9 @@ async function cargar() {
 const rankingPeliculas = computed(() => {
 
   const ids = new Set(catalogoStore.peliculas.map(p => String(p.id)))
-  return store.ranking.filter(voto => ids.has(String(voto.peliculaId))).slice(0, 10)
+  return filtrar(store.ranking.filter(voto => ids.has(String(voto.peliculaId))),{ busqueda: busqueda.value, generoSeleccionado:'', añoSeleccionado:''}).slice(0, 10)
 })
+
 const rankingSeries = computed(() => {
   const ids = new Set(catalogoStore.series.map(s => String(s.id)))
   return filtrar(store.ranking.filter(i => ids.has(String(i.peliculaId))), { busqueda: busqueda.value, generoSeleccionado: '', añoSeleccionado: '' }).slice(0, 10)
